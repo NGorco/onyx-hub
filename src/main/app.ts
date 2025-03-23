@@ -19,10 +19,11 @@ class NoPathResolveLogger extends ConsoleLogger {
 }
 
 async function bootstrap() {
-  const yaml = readFileSync(__dirname + '/../config/pages.yaml');
-  console.log(yaml.toString())
   const onyxApp = await NestFactory.create(OnyxAppModule, { logger: new NoPathResolveLogger() });
-  onyxApp.use('/assets', express.static(__dirname + '/../assets'));
+
+  onyxApp.use('/assets', express.static(__dirname + '/../../assets'));
+  onyxApp.use('/', express.static(__dirname + '/../../app_assets'));
+
   await onyxApp.listen(Config.API_PORT ?? 3004);
 
   if (Config.NODE_ENV === 'local') {

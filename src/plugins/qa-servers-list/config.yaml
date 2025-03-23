@@ -1,0 +1,6 @@
+- onyx_type: config
+  onyx_id: qa-servers-list-config
+  onyx_data:
+    title: QA Server List component
+    variables:
+    secrets:

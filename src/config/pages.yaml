@@ -21,11 +21,12 @@
         title: Documentaion
 
 - onyx_type: page
-  onyx_id: teams
+  onyx_id: teams_2
   onyx_data:
     title: Teams
 
+
 - onyx_type: page
-  onyx_id: teams
+  onyx_id: teams_1
   onyx_data:
     title: Teams

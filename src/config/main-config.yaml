@@ -1,5 +1,5 @@
 onyx_type: config
-onyx_id: config
+onyx_id: onyx_config
 onyx_data:
   variables_from_env:
     title: title
@@ -7,4 +7,3 @@ onyx_data:
     title: My amazing Onyx Hub
     logo_url: /assets/logo.jpg
     defult_page_template: .
-    
