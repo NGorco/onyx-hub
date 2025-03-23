@@ -1,0 +1,31 @@
+- onyx_type: page
+  onyx_id: teams
+  onyx_data:
+    title: Teams
+    template: sfsf.txsc
+
+- onyx_type: page
+  onyx_id: fe
+  onyx_data: 
+    title: FE team
+
+- onyx_type: page
+  onyx_id: be
+  onyx_data:
+    title: BE team
+
+  onyx_children:
+    - onyx_type: page
+      onyx_id: docs
+      onyx_data:
+        title: Documentaion
+
+- onyx_type: page
+  onyx_id: teams
+  onyx_data:
+    title: Teams
+
+- onyx_type: page
+  onyx_id: teams
+  onyx_data:
+    title: Teams

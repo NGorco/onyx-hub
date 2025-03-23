@@ -1,0 +1,10 @@
+- onyx_type: plugin
+  onyx_id: qa-server-list
+  onyx_data:
+    title: QA Server List component
+
+- onyx_type: config
+  onyx_type: qa-server-list-config
+  onyx_data:
+    variables:
+    secrets:

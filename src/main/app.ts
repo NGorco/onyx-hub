@@ -3,6 +3,9 @@ import { OnyxAppModule } from './modules';
 import { Config } from '../application/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConsoleLogger } from '@nestjs/common';
+import * as express from 'express';
+import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 class NoPathResolveLogger extends ConsoleLogger {
   log(message: string, ...opts: any[]) {
@@ -16,8 +19,11 @@ class NoPathResolveLogger extends ConsoleLogger {
 }
 
 async function bootstrap() {
-  const onyxApp = await NestFactory.create(OnyxAppModule, {logger: new NoPathResolveLogger()});
-  await onyxApp.listen(Config.API_PORT ?? 3000);
+  const yaml = readFileSync(__dirname + '/../config/pages.yaml');
+  console.log(yaml.toString())
+  const onyxApp = await NestFactory.create(OnyxAppModule, { logger: new NoPathResolveLogger() });
+  onyxApp.use('/assets', express.static(__dirname + '/../assets'));
+  await onyxApp.listen(Config.API_PORT ?? 3004);
 
   if (Config.NODE_ENV === 'local') {
     const docsConfig = new DocumentBuilder()
