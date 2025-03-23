@@ -3,11 +3,13 @@ import { RouterModule } from "@nestjs/core";
 import { SidebarModule } from "../domains/sidebar/module";
 import { UserModule } from "../domains/user/module";
 import { SharedModule } from "../domains/shared/module";
+import { PagesModule } from "../domains/pages/module";
 
 @Module({
     imports: [
         SharedModule,
         UserModule,
+        PagesModule,
         RouterModule.register([
             {
                 path: 'api',
@@ -21,6 +23,10 @@ import { SharedModule } from "../domains/shared/module";
                         module: SidebarModule
                     }
                 ]
+            },
+            {
+                path: '/',
+                module: PagesModule
             }
         ])
     ]

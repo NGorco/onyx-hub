@@ -138,7 +138,7 @@ export class UserConfigClass {
         if (res.onyx_data.variables_from_env) {
             for (let [key, val] of Object.entries(res.onyx_data.variables_from_env)) {
                 if (!Object.keys(process.env).includes(key)) {
-                    throw new Error("Variable from Env is absent: " + key);
+                    throw new Error(`EnvVariable for variable '${key}' is absent: ` + val);
                 }
 
                 if (res.onyx_data.variables && res.onyx_data.variables[key]) {
@@ -151,7 +151,7 @@ export class UserConfigClass {
         if (res.onyx_data.secrets_from_env) {
             for (let [key, val] of Object.entries(res.onyx_data.secrets_from_env)) {
                 if (!Object.keys(process.env).includes(key)) {
-                    throw new Error("Variable from Env is absent: " + key);
+                    throw new Error(`EnvVariable for secret '${key}' is absent: ` + val);
                 }
                 if (res.onyx_data.secrets && res.onyx_data.secrets[key]) {
                     throw new Error("Duplicated secret: " + key);

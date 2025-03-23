@@ -22,7 +22,7 @@ async function bootstrap() {
   const onyxApp = await NestFactory.create(OnyxAppModule, { logger: new NoPathResolveLogger() });
 
   onyxApp.use('/assets', express.static(__dirname + '/../../assets'));
-  onyxApp.use('/', express.static(__dirname + '/../../app_assets'));
+  onyxApp.use('/app_assets', express.static(__dirname + '/../../app_assets'));
 
   await onyxApp.listen(Config.API_PORT ?? 3004);
 
