@@ -11,6 +11,15 @@ type OnyxResource = {
     onyx_data: Record<string, any>
 }
 
+type OnyxPage = OnyxResource & {
+    onyx_data: Record<string, any> & {
+        url: string
+        guid: string
+        parents: OnyxPage[]
+        template?: string
+    }
+}
+
 function getAllYamlFiles(dir: string): string[] {
     const entries = readdirSync(dir, { withFileTypes: true });
     const files = entries.flatMap(entry => {
@@ -31,16 +40,18 @@ const OnyxTypes = {
 
 @Injectable()
 export class UserConfigClass {
-    pages: Map<string, OnyxResource> = new Map
+    pages: Map<string, OnyxPage> = new Map
     configs: Map<string, OnyxResource> = new Map
     plugin_configs: Map<string, OnyxResource> = new Map
 
     constructor(private config: ConfigClass) {
         const yamls = this.parseYamls();
 
-        this.registerPageResources(yamls.pages);
+        this.registerPageResources(yamls.pages, []);
         this.registerConfigResources(yamls.configs);
         this.registerPluginConfigs(yamls.plugin_configs, yamls.plugin_configs_files);
+
+        //console.log([...this.pages.values()])
     }
 
     parseYamls() {
@@ -122,14 +133,30 @@ export class UserConfigClass {
         return yamls
     }
 
-    registerPageResources(pages: OnyxResource[]) {
+    registerPageResources(pages: OnyxResource[], parent_pages: OnyxPage[]) {
         for (let page of pages) {
             if (page.onyx_type === OnyxTypes.PAGE) {
                 if (this.pages.has(page.onyx_id)) {
                     throw new Error("Page already exists: " + page.onyx_id);
                 }
 
-                this.pages.set(page.onyx_id, page);
+                const onyxPage: OnyxPage = {
+                    ...page,
+                    onyx_data: {
+                        ...page.onyx_data,
+                        url: '',
+                        guid: page.onyx_data.guid || page.onyx_id,
+                        parents: parent_pages
+                    },
+                };
+                onyxPage.onyx_data.url = [...parent_pages, onyxPage].map(p => p.onyx_data.guid).join('/');
+
+                if (page.onyx_data.children && Array.isArray(page.onyx_data.children)) {
+                    page.onyx_data.children.forEach(this.filterOnyxResource);
+                    this.registerPageResources(page.onyx_data.children, [...parent_pages, onyxPage]);
+                }
+
+                this.pages.set(page.onyx_id, onyxPage);
             }
         }
     }

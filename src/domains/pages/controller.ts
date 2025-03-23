@@ -1,22 +1,39 @@
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
 import { PagesService } from "./service";
 import { Request, Response } from "express";
 import { ConfigClass } from "../../application/config";
+import { UserConfigClass } from "../../application/user_config";
+import { HandlebarsSymbol } from "../shared/module";
+import { readFileSync } from "fs";
 
 @Controller()
 export class PagesController {
-    constructor(private service: PagesService, private config: ConfigClass) { }
+    constructor(private service: PagesService,
+        private config: ConfigClass,
+        private userConfig:UserConfigClass, 
+        @Inject(HandlebarsSymbol) private hbs: typeof Handlebars.compile
+    ) { }
 
     @Get('*')
     handleAll(@Req() req: Request, @Res() res: Response) {
-        const path = req.path;
+        const path = req.path.replace(/^\/(.*)/g, '$1').replace(/(.*)\/$/g, '$1');
 
-        // исключаем /api и /assets
-        if (path.startsWith('/api') || path.startsWith('/assets')) {
+        let pages = [...this.userConfig.pages.values()].filter(p => p.onyx_data.url === path);
+
+        if (path.startsWith('/api') || path.startsWith('/assets') || pages.length === 0) {
             return res.status(404).send('Not found');
         }
 
-        // тут рендеришь HTML (например SSR)
-        return res.sendFile('/src/layouts/default.html', { root: this.config.APP_FOLDER }); // путь подставь свой
+        const page = pages[0];
+
+        console.log(page.onyx_data.parents);
+
+        const templatePath = page.onyx_data.template 
+        || this.userConfig.configs.get('onyx_config')?.onyx_data.template 
+        || '/src/layouts/default.html';
+
+        let template = this.hbs(readFileSync(this.config.APP_FOLDER + templatePath).toString());
+      
+        return res.send(template({ ...page })); 
     }
 }

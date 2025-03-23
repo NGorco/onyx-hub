@@ -170,9 +170,23 @@
 
      main {
          flex: 1;
-         padding: 20px;
      }
 
      aside a {
          color: white;
      }
+
+     li.breadcrumb-item {
+        display: inline;
+    }
+
+/** Content types */
+.iframe-wrapper {
+    width: 100%;
+    height: 100vh;
+}
+
+.iframe-wrapper iframe {
+    width: 100%;
+    height: 100vh;
+}

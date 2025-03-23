@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Layout</title>
+    <title>{{ onyx_data.title }}</title>
     <link rel="stylesheet" href="/app_assets/style.css" />
 </head>
 
@@ -27,10 +27,21 @@
 
         <div class="content">
             <header>
-                <h1>Header</h1>
+                <h1>
+                    {{ onyx_data.title }}
+                </h1>
+                <ol class="breadcrumb">
+                    {{#each onyx_data.parents}}
+                      <li class="breadcrumb-item">
+                        <a href="/{{onyx_data.url}}">{{onyx_data.title}}</a>
+                      </li>
+                    {{/each}}
+                  </ol>
             </header>
             <main>
-                <p>Main content goes here.</p>
+                <div class="iframe-wrapper">
+                    {{{ onyx_data.raw }}}
+                </div>
             </main>
         </div>
     </div>

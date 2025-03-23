@@ -13,12 +13,42 @@
   onyx_id: be
   onyx_data:
     title: BE team
+    children:
+      - onyx_type: page
+        onyx_id: docs
+        onyx_data:
+          title: Documentaion
+          children:
+              - onyx_type: page
+                onyx_id: docs_cicd
+                onyx_data:
+                  title: CI/CD
 
-  onyx_children:
-    - onyx_type: page
-      onyx_id: docs
-      onyx_data:
-        title: Documentaion
+              - onyx_type: page
+                onyx_id: docs_database
+                onyx_data:
+                  title: Database docs
+                  guid: database
+                  children:
+                    - onyx_type: page
+                      onyx_id: docs_database_access
+                      onyx_data:
+                        title: Test database credentials
+                        raw: |
+
+              - onyx_type: page
+                onyx_id: docs_database_install
+                onyx_data:
+                  title: Database installation manual
+
+      - onyx_type: page
+        onyx_id: docs_infra
+        onyx_data:
+          title: Infra Documentation
+      - onyx_type: page
+        onyx_id: be_guild_meetings
+        onyx_data:
+          title: BE Guild meetings
 
 - onyx_type: page
   onyx_id: teams_2
