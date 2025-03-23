@@ -2,7 +2,6 @@ onyx_type: config
 onyx_id: onyx_config
 onyx_data:
   variables_from_env:
-    title: title
   variables:
     title: My amazing Onyx Hub
     logo_url: /assets/logo.jpg

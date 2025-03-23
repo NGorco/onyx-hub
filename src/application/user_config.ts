@@ -37,16 +37,28 @@ export class UserConfigClass {
     plugin_configs: Map<string, OnyxResource> = new Map
 
     constructor(private config: ConfigClass) {
-        this.parseYamls();
+        const yamls = this.parseYamls();
 
-        console.log(this.configs);
-        console.log(this.plugin_configs);
-        console.log(this.pages);
+        this.registerPageResources(yamls.pages);
+        this.registerConfigResources(yamls.configs);
+        this.registerPluginConfigs(yamls.plugin_configs, yamls.plugin_configs_files);
     }
 
     parseYamls() {
+        const yamls: {
+            configs: OnyxResource[],
+            pages: OnyxResource[],
+            plugin_configs: OnyxResource[],
+            plugin_configs_files: Map<OnyxResource, string>
+        } = {
+            configs: [],
+            pages: [],
+            plugin_configs: [],
+            plugin_configs_files: new Map
+        }
+
         /** 
-         * Parsing main config yamls
+         * Sorting main config yamls
          */
         const configYamls = getAllYamlFiles(this.config.APP_FOLDER + '/src/config');
 
@@ -55,11 +67,19 @@ export class UserConfigClass {
             const data = yaml.load(fileContent);
             try {
                 (Array.isArray(data) ? data : [data])
-                .map((d) => this.filterMapOnyxResource(d))
-                .filter(d => !!d)
-                .map(d => this.registerPageResource(d))
-                .map(d => this.mapConfigEnvVars(d))
-                .map(d => this.registerConfigResource(d))
+                    .map((d) => this.filterOnyxResource(d))
+                    .filter(d => !!d)
+                    .map(d => {
+                        if (d.onyx_type === OnyxTypes.PAGE) {
+                            yamls.pages.push(d);
+                        }
+                        return d;
+                    })
+                    .map(d => {
+                        if (d.onyx_type === OnyxTypes.CONFIG) {
+                            yamls.configs.push(d);
+                        }
+                    });
             } catch (error) {
                 if (error instanceof Error) {
                     const err = new Error("Parsing config " + yamlPath + " failed: " + error.message);
@@ -78,11 +98,20 @@ export class UserConfigClass {
             const data = yaml.load(fileContent);
             try {
                 (Array.isArray(data) ? data : [data])
-                .map((d) => this.filterMapOnyxResource(d))
-                .filter(d => !!d)
-                .map(d => this.registerPageResource(d))
-                .map(d => this.mapConfigEnvVars(d))
-                .map(d => this.registerPluginConfigs(d, yamlPath))
+                    .map((d) => this.filterOnyxResource(d))
+                    .filter(d => !!d)
+                    .map(d => {
+                        if (d.onyx_type === OnyxTypes.PAGE) {
+                            yamls.pages.push(d);
+                        }
+                        return d;
+                    })
+                    .map(d => {
+                        if (d.onyx_type === OnyxTypes.CONFIG) {
+                            yamls.plugin_configs_files.set(d, yamlPath);
+                            yamls.plugin_configs.push(d)
+                        }
+                    });
             } catch (error) {
                 if (error instanceof Error) {
                     const err = new Error("Parsing plugins " + yamlPath + " failed: " + error.message);
@@ -90,72 +119,81 @@ export class UserConfigClass {
                 }
             }
         }
+
+        return yamls
     }
 
-    registerPageResource(res: OnyxResource): OnyxResource {
-        if (res.onyx_type === OnyxTypes.PAGE) {
-            if (this.pages.has(res.onyx_id)) {
-                throw new Error("Page already exists: " + res.onyx_id);
+    registerPageResources(pages: OnyxResource[]) {
+        for (let page of pages) {
+            if (page.onyx_type === OnyxTypes.PAGE) {
+                if (this.pages.has(page.onyx_id)) {
+                    throw new Error("Page already exists: " + page.onyx_id);
+                }
+
+                this.pages.set(page.onyx_id, page);
             }
-
-            this.pages.set(res.onyx_id, res);
         }
-
-        return res;
     }
 
     mapConfigEnvVars(res: OnyxResource): OnyxResource {
-        if (res.onyx_type === OnyxTypes.CONFIG) {
-            if (res.onyx_data.variables_from_env) {
-                for (let [key, val] of Object.entries(res.onyx_data.variables_from_env)) {
-                    if (!Object.keys(process.env).includes(key)) {
-                        throw new Error("Variable from Env is absent: " + key);
-                    }
-                    res.onyx_data.variables_from_env.key = process.env[val as string];
+        if (res.onyx_data.variables_from_env) {
+            for (let [key, val] of Object.entries(res.onyx_data.variables_from_env)) {
+                if (!Object.keys(process.env).includes(key)) {
+                    throw new Error("Variable from Env is absent: " + key);
                 }
-            }
 
-            if (res.onyx_data.secrets_from_env) {
-                for (let [key, val] of Object.entries(res.onyx_data.secrets_from_env)) {
-                    if (!Object.keys(process.env).includes(key)) {
-                        throw new Error("Variable from Env is absent: " + key);
-                    }
-                    res.onyx_data.secrets_from_env.key = process.env[val as string];
+                if (res.onyx_data.variables && res.onyx_data.variables[key]) {
+                    throw new Error("Duplicated variable: " + key);
                 }
+                res.onyx_data.variables_from_env.key = process.env[val as string];
+            }
+        }
+
+        if (res.onyx_data.secrets_from_env) {
+            for (let [key, val] of Object.entries(res.onyx_data.secrets_from_env)) {
+                if (!Object.keys(process.env).includes(key)) {
+                    throw new Error("Variable from Env is absent: " + key);
+                }
+                if (res.onyx_data.secrets && res.onyx_data.secrets[key]) {
+                    throw new Error("Duplicated secret: " + key);
+                }
+                res.onyx_data.secrets_from_env.key = process.env[val as string];
             }
         }
 
         return res;
     }
 
-    registerConfigResource(res: OnyxResource): OnyxResource {
-        if (res.onyx_type === OnyxTypes.CONFIG) {
-            if (this.configs.has(res.onyx_id)) {
-                throw new Error("Config already exists: " + res.onyx_id);
+    registerConfigResources(configs: OnyxResource[]) {
+        for (let config of configs) {
+            if (this.configs.has(config.onyx_id)) {
+                throw new Error("Config already exists: " + config.onyx_id);
             }
 
-            this.configs.set(res.onyx_id, res);
+            this.configs.set(config.onyx_id, config);
         }
-        return res;
     }
 
-    registerPluginConfigs(res: OnyxResource, filePath: string): OnyxResource {
-        if (res.onyx_type === OnyxTypes.CONFIG) {
-            if (!(new RegExp('^' + basename(dirname(filePath)) + '-.*')).test(res.onyx_id)) {
-                throw new Error("Plugin Config Id should have the same prefix as `<plugin folder>-.*`: " + res.onyx_id);
+    registerPluginConfigs(configs: OnyxResource[], filePaths: Map<OnyxResource, string>) {
+        for (let config of configs) {
+            const filePath = filePaths.get(config);
+            if (!filePath) {
+                throw new Error("There is no path for config: " + JSON.stringify(config));
             }
 
-            if (this.plugin_configs.has(res.onyx_id)) {
-                throw new Error("Plugin Config already exists: " + res.onyx_id);
+            if (!(new RegExp('^' + basename(dirname(filePath)) + '-.*')).test(config.onyx_id)) {
+                throw new Error("Plugin Config Id should have the same prefix as `<plugin folder>-.*`: " + config.onyx_id);
             }
 
-            this.plugin_configs.set(res.onyx_id, res);
+            if (this.plugin_configs.has(config.onyx_id)) {
+                throw new Error("Plugin Config already exists: " + config.onyx_id);
+            }
+
+            this.plugin_configs.set(config.onyx_id, config);
         }
-
-        return res;
     }
 
-    filterMapOnyxResource(res: OnyxResource): OnyxResource | null {
+    filterOnyxResource(res: OnyxResource): OnyxResource | null {
         if (!res.onyx_type) {
             return null
         }
