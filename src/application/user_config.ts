@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { ConfigClass } from "./config";
-import { readdirSync, readFileSync } from "fs";
+import { copyFileSync, cpSync, existsSync, lstatSync, readdirSync, readFileSync } from "fs";
 import { basename, dirname, extname, join } from "path";
 // Somehow did not work as import
 const yaml = require('js-yaml')
@@ -12,11 +12,20 @@ type OnyxResource = {
 }
 
 type OnyxPage = OnyxResource & {
-    onyx_data: Record<string, any> & {
+    onyx_data: OnyxResource['onyx_data'] & {
         url: string
         guid: string
         parents: OnyxPage[]
         template?: string
+    }
+}
+
+export type OnyxPluginConfig = OnyxResource & {
+    onyx_data: OnyxResource['onyx_data'] & {
+        plugin_folder: string
+        backend_entry_file?: string
+        backend_entry_point?: string
+        plugin_id: string
     }
 }
 
@@ -40,9 +49,10 @@ const OnyxTypes = {
 
 @Injectable()
 export class UserConfigClass {
+    fe_assets_list: string[] = []
     pages: Map<string, OnyxPage> = new Map
     configs: Map<string, OnyxResource> = new Map
-    plugin_configs: Map<string, OnyxResource> = new Map
+    plugin_configs: Map<string, OnyxPluginConfig> = new Map
 
     constructor(private config: ConfigClass) {
         const yamls = this.parseYamls();
@@ -102,8 +112,9 @@ export class UserConfigClass {
          * Parsing plugins yamls
          */
         const pluginsYamls = getAllYamlFiles(this.config.APP_FOLDER + '/src/plugins');
+        const corePluginsYamls = getAllYamlFiles(this.config.APP_FOLDER + '/src/core/plugins');
 
-        for (let yamlPath of pluginsYamls) {
+        for (let yamlPath of [...corePluginsYamls, ...pluginsYamls]) {
             const fileContent = readFileSync(yamlPath, 'utf8');
             const data = yaml.load(fileContent);
             try {
@@ -164,26 +175,26 @@ export class UserConfigClass {
     mapConfigEnvVars(res: OnyxResource): OnyxResource {
         if (res.onyx_data.variables_from_env) {
             for (let [key, val] of Object.entries(res.onyx_data.variables_from_env)) {
-                if (!Object.keys(process.env).includes(key)) {
+                if (!Object.keys(process.env).includes(val as string)) {
                     throw new Error(`EnvVariable for variable '${key}' is absent: ` + val);
                 }
 
                 if (res.onyx_data.variables && res.onyx_data.variables[key]) {
                     throw new Error("Duplicated variable: " + key);
                 }
-                res.onyx_data.variables_from_env.key = process.env[val as string];
+                res.onyx_data.variables_from_env[key] = process.env[val as string];
             }
         }
 
         if (res.onyx_data.secrets_from_env) {
             for (let [key, val] of Object.entries(res.onyx_data.secrets_from_env)) {
-                if (!Object.keys(process.env).includes(key)) {
+                if (!Object.keys(process.env).includes(val as string)) {
                     throw new Error(`EnvVariable for secret '${key}' is absent: ` + val);
                 }
                 if (res.onyx_data.secrets && res.onyx_data.secrets[key]) {
                     throw new Error("Duplicated secret: " + key);
                 }
-                res.onyx_data.secrets_from_env.key = process.env[val as string];
+                res.onyx_data.secrets_from_env[key] = process.env[val as string];
             }
         }
 
@@ -218,7 +229,26 @@ export class UserConfigClass {
                 throw new Error("Plugin Config already exists: " + config.onyx_id);
             }
 
-            this.plugin_configs.set(config.onyx_id, config);
+            const path = filePath.split('/');
+            path.pop();
+
+            const onyxPlugin: OnyxPluginConfig = {
+                ...config,
+                onyx_data: {
+                    ...config.onyx_data,
+                    plugin_folder: path.join('/'),
+                    plugin_id: basename(dirname(filePath))
+                }
+            }
+
+            const feAssetsPath = dirname(filePath) + '/fe-assets'
+
+            if (existsSync(feAssetsPath) && lstatSync(feAssetsPath).isDirectory()) {
+                cpSync(feAssetsPath, this.config.APP_FOLDER + '/app_assets/' + onyxPlugin.onyx_data.plugin_id, {recursive: true})
+                this.fe_assets_list.push(...readdirSync(feAssetsPath).map(f => '/' + onyxPlugin.onyx_data.plugin_id + '/' + f))
+            }
+
+            this.plugin_configs.set(config.onyx_id, onyxPlugin);
         }
     }
 

@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>{{ onyx_data.title }}</title>
     <link rel="stylesheet" href="/app_assets/style.css" />
+    {{#each assets}}
+   <script src="/app_assets/{{this}}"></script>
+  {{/each}}
 </head>
 
 <body>
@@ -27,6 +30,7 @@
 
         <div class="content">
             <header>
+                <repo-table></repo-table>
                 <h1>
                     {{ onyx_data.title }}
                 </h1>

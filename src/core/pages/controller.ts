@@ -26,14 +26,12 @@ export class PagesController {
 
         const page = pages[0];
 
-        console.log(page.onyx_data.parents);
-
         const templatePath = page.onyx_data.template 
         || this.userConfig.configs.get('onyx_config')?.onyx_data.template 
         || '/src/layouts/default.html';
 
         let template = this.hbs(readFileSync(this.config.APP_FOLDER + templatePath).toString());
       
-        return res.send(template({ ...page })); 
+        return res.send(template({ ...page, assets: this.userConfig.fe_assets_list })); 
     }
 }
