@@ -29,7 +29,6 @@ const OnyxTypes = {
     CONFIG: 'config'
 } as const
 
-
 @Injectable()
 export class UserConfigClass {
     pages: Map<string, OnyxResource> = new Map
