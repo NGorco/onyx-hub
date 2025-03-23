@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import type { ConfigClass } from "./config";
 import { readdirSync, readFileSync } from "fs";
 import { basename, dirname, extname, join } from "path";
-
+// Somehow did not work as import
 const yaml = require('js-yaml')
 
 type OnyxResource = {
@@ -46,6 +46,9 @@ export class UserConfigClass {
     }
 
     parseYamls() {
+        /** 
+         * Parsing main config yamls
+         */
         const configYamls = getAllYamlFiles(this.config.APP_FOLDER + '/src/config');
 
         for (let yamlPath of configYamls) {
@@ -66,6 +69,9 @@ export class UserConfigClass {
             }
         }
 
+        /** 
+         * Parsing plugins yamls
+         */
         const pluginsYamls = getAllYamlFiles(this.config.APP_FOLDER + '/src/plugins');
 
         for (let yamlPath of pluginsYamls) {
@@ -138,7 +144,7 @@ export class UserConfigClass {
     validatePluginConfigs(res: OnyxResource, filePath: string): OnyxResource {
         if (res.onyx_type === OnyxTypes.CONFIG) {
             if (!(new RegExp('^' + basename(dirname(filePath)) + '-.*')).test(res.onyx_id)) {
-                throw new Error("Plugin Config Id should have the same prefix as a plugin folder: " + res.onyx_id);
+                throw new Error("Plugin Config Id should have the same prefix as `<plugin folder>-.*`: " + res.onyx_id);
             }
         }
 
