@@ -26,7 +26,6 @@ function getAllYamlFiles(dir: string): string[] {
 
 const OnyxTypes = {
     PAGE: 'page',
-    PLUGIN: 'plugin',
     CONFIG: 'config'
 } as const
 
@@ -35,13 +34,13 @@ const OnyxTypes = {
 export class UserConfigClass {
     pages: Map<string, OnyxResource> = new Map
     configs: Map<string, OnyxResource> = new Map
-    plugins: Map<string, OnyxResource> = new Map
+    plugin_configs: Map<string, OnyxResource> = new Map
 
     constructor(private config: ConfigClass) {
         this.parseYamls();
 
         console.log(this.configs);
-        console.log(this.plugins);
+        console.log(this.plugin_configs);
         console.log(this.pages);
     }
 
@@ -81,10 +80,9 @@ export class UserConfigClass {
                 (Array.isArray(data) ? data : [data])
                 .map((d) => this.filterMapOnyxResource(d))
                 .filter(d => !!d)
-                .map(d => this.validatePluginConfigs(d, yamlPath))
                 .map(d => this.registerPageResource(d))
                 .map(d => this.mapConfigEnvVars(d))
-                .map(d => this.registerConfigResource(d))
+                .map(d => this.registerPluginConfigs(d, yamlPath))
             } catch (error) {
                 if (error instanceof Error) {
                     const err = new Error("Parsing plugins " + yamlPath + " failed: " + error.message);
@@ -141,11 +139,17 @@ export class UserConfigClass {
         return res;
     }
 
-    validatePluginConfigs(res: OnyxResource, filePath: string): OnyxResource {
+    registerPluginConfigs(res: OnyxResource, filePath: string): OnyxResource {
         if (res.onyx_type === OnyxTypes.CONFIG) {
             if (!(new RegExp('^' + basename(dirname(filePath)) + '-.*')).test(res.onyx_id)) {
                 throw new Error("Plugin Config Id should have the same prefix as `<plugin folder>-.*`: " + res.onyx_id);
             }
+
+            if (this.plugin_configs.has(res.onyx_id)) {
+                throw new Error("Plugin Config already exists: " + res.onyx_id);
+            }
+
+            this.plugin_configs.set(res.onyx_id, res);
         }
 
         return res;
