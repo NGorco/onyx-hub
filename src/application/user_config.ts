@@ -166,6 +166,7 @@ export class UserConfigClass {
 
     registerConfigResources(configs: OnyxResource[]) {
         for (let config of configs) {
+            config = this.mapConfigEnvVars(config);
             if (this.configs.has(config.onyx_id)) {
                 throw new Error("Config already exists: " + config.onyx_id);
             }
@@ -180,6 +181,8 @@ export class UserConfigClass {
             if (!filePath) {
                 throw new Error("There is no path for config: " + JSON.stringify(config));
             }
+
+            config = this.mapConfigEnvVars(config);
 
             if (!(new RegExp('^' + basename(dirname(filePath)) + '-.*')).test(config.onyx_id)) {
                 throw new Error("Plugin Config Id should have the same prefix as `<plugin folder>-.*`: " + config.onyx_id);
