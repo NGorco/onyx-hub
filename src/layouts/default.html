@@ -34,6 +34,7 @@
                 <h1>
                     {{ onyx_data.title }}
                 </h1>
+                <a href="/be">BEEE</a>
                 <ol class="breadcrumb">
                     {{#each onyx_data.parents}}
                       <li class="breadcrumb-item">
@@ -43,6 +44,9 @@
                   </ol>
             </header>
             <main>
+                {{#if root}}
+                <h1>ROOT PAGE</h1>
+                {{/if}}
                 <div class="iframe-wrapper">
                     {{{ onyx_data.raw }}}
                 </div>

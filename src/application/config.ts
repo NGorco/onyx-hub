@@ -4,7 +4,7 @@ import { NODE_ENVS } from './consts';
 @Injectable()
 export class ConfigClass {
     readonly DB_URL!: string;
-    readonly API_PORT!: number;
+    readonly API_PORT = 3000;
     readonly NODE_ENV!: ValueOf<typeof NODE_ENVS>;
     readonly APP_FOLDER!: string;
 
@@ -20,6 +20,10 @@ export class ConfigClass {
 
                 (this as any)[field] = srcFolder.join('/');
                 continue;
+            }
+
+            if (field === 'API_PORT') {
+                continue
             }
             
             if (value === undefined) {
