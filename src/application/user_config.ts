@@ -114,7 +114,7 @@ export class UserConfigClass {
                     });
             } catch (error) {
                 if (error instanceof Error) {
-                    const err = new Error("Parsing plugins " + yamlPath + " failed: " + error.message);
+                    const err = new Error("Parsing plugins " + yamlPath + " failed");
                     throw err;
                 }
             }
