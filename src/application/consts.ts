@@ -1,3 +1,3 @@
 export const NODE_ENVS = {
-    LOCAL: 'local',
+  LOCAL: 'local',
 } as const;

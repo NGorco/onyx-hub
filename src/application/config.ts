@@ -4,7 +4,7 @@ import { NODE_ENVS } from './consts';
 @Injectable()
 export class ConfigClass {
     readonly DB_URL!: string;
-    readonly API_PORT = 3000;
+    readonly API_PORT = 3004;
     readonly NODE_ENV!: ValueOf<typeof NODE_ENVS>;
     readonly APP_FOLDER!: string;
 

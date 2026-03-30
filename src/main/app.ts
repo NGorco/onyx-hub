@@ -4,13 +4,13 @@ import { Config } from '../application/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConsoleLogger } from '@nestjs/common';
 import * as express from 'express';
-import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
 
 class NoPathResolveLogger extends ConsoleLogger {
   log(message: string, ...opts: any[]) {
+    const opt = opts[0] as string;
+
     if (
-      ['InstanceLoader', 'RoutesResolver', 'RouterExplorer'].includes(opts[0] || '')
+      ['InstanceLoader', 'RoutesResolver', 'RouterExplorer'].includes(opt || '')
     ) {
       return false;
     }
@@ -19,7 +19,9 @@ class NoPathResolveLogger extends ConsoleLogger {
 }
 
 async function bootstrap() {
-  const onyxApp = await NestFactory.create(OnyxAppModule, { logger: new NoPathResolveLogger() });
+  const onyxApp = await NestFactory.create(OnyxAppModule, {
+    logger: new NoPathResolveLogger(),
+  });
 
   onyxApp.use('/assets', express.static(__dirname + '/../../assets'));
   onyxApp.use('/app_assets', express.static(__dirname + '/../../app_assets'));
@@ -37,7 +39,7 @@ async function bootstrap() {
           in: 'header',
           scheme: 'authorization',
         },
-        'HttpAuthHeader'
+        'HttpAuthHeader',
       )
       .build();
 
@@ -56,4 +58,4 @@ async function bootstrap() {
 
   console.log(`Running app on http://localhost:${Config.API_PORT}`);
 }
-bootstrap();
+void bootstrap();

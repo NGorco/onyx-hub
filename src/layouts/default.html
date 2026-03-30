@@ -6,13 +6,23 @@
     <title>{{ onyx_data.title }}</title>
     <link rel="stylesheet" href="/app_assets/style.css" />
     {{#each assets}}
-   <script src="/app_assets/{{this}}"></script>
-  {{/each}}
+    <script type="module" src="/app_assets/{{this}}"></script>
+    {{/each}}
+    <script src="https://unpkg.com/swup@4"></script> 
+    <style>
+        html.is-changing .transition-fade {
+          transition: opacity 0.25s;
+          opacity: 1;
+        }
+        html.is-animating .transition-fade {
+          opacity: 0;
+        }
+      </style>
 </head>
 
 <body>
     <div class="container">
-        <aside>
+        <aside id="swup-aside">
             <h2>Sidebar</h2>
             <nav>
                 <ul>
@@ -28,7 +38,7 @@
             </nav>
         </aside>
 
-        <div class="content">
+        <div class="content" id="swup-main">
             <header>
                 <repo-table></repo-table>
                 <h1>
@@ -37,22 +47,29 @@
                 <a href="/be">BEEE</a>
                 <ol class="breadcrumb">
                     {{#each onyx_data.parents}}
-                      <li class="breadcrumb-item">
+                    <li class="breadcrumb-item">
                         <a href="/{{onyx_data.url}}">{{onyx_data.title}}</a>
-                      </li>
+                    </li>
                     {{/each}}
-                  </ol>
+                </ol>
             </header>
             <main>
                 {{#if root}}
                 <h1>ROOT PAGE</h1>
                 {{/if}}
+                {{{ onyx_data.raw }}}
                 <div class="iframe-wrapper">
                     {{{ onyx_data.raw }}}
                 </div>
             </main>
         </div>
     </div>
+    <script>
+        const swup = new Swup({
+            containers: ['#swup-aside', '#swup-main'] 
+        });
+    </script>
+
 </body>
 
 </html>

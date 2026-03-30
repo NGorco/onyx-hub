@@ -35,6 +35,9 @@
                       onyx_data:
                         title: Test database credentials
                         raw: |
+                          ddfsdfsdfsfsdfd
+                          sfsdfdsfdsfds
+                          fdsfds
 
               - onyx_type: page
                 onyx_id: docs_database_install

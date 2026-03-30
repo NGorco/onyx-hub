@@ -244,7 +244,7 @@ export class UserConfigClass {
             const feAssetsPath = dirname(filePath) + '/fe-assets'
 
             if (existsSync(feAssetsPath) && lstatSync(feAssetsPath).isDirectory()) {
-                cpSync(feAssetsPath, this.config.APP_FOLDER + '/app_assets/' + onyxPlugin.onyx_data.plugin_id, {recursive: true})
+                cpSync(feAssetsPath, this.config.APP_FOLDER + '/app_assets/' + onyxPlugin.onyx_data.plugin_id, { recursive: true })
                 this.fe_assets_list.push(...readdirSync(feAssetsPath).map(f => '/' + onyxPlugin.onyx_data.plugin_id + '/' + f))
             }
 
