@@ -1,0 +1,23 @@
+id: dashboard
+title: Dashboard
+route: /dashboard
+columns: 3
+widgets:
+  - plugin: weather-widget
+    widget: weather
+    size: 1
+
+  - plugin: stocks-widget
+    widget: markets
+    size: 1
+
+  - plugin: cluster-registry
+    widget: nodes
+    size: 1
+
+  - plugin: markdown-widget
+    widget: markdown
+    size: 3
+    params:
+      file: welcome.md
+      bare: true

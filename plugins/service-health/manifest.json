@@ -1,0 +1,14 @@
+{
+  "id": "service-health",
+  "name": "Service Health",
+  "version": "1.0.0",
+  "description": "Monitor health status of portal nodes in the cluster",
+  "ui": {
+    "entry": "index.js",
+    "route": "/service-health",
+    "nav": {
+      "label": "Service Health",
+      "icon": "health"
+    }
+  }
+}

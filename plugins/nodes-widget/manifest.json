@@ -1,0 +1,11 @@
+{
+  "id": "nodes-widget",
+  "name": "Cluster Nodes",
+  "version": "1.0.0",
+  "description": "Live cluster node list with portal links",
+  "widget": true,
+  "ui": {
+    "entry": "index.js",
+    "route": "/widgets/nodes"
+  }
+}

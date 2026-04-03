@@ -1,0 +1,16 @@
+id: infra
+title: Infrastructure
+route: /infra
+columns: 3
+widgets:
+  - plugin: cluster-registry
+    widget: nodes
+    size: 2
+
+  - plugin: weather-widget
+    widget: weather
+    size: 1
+
+  - plugin: stocks-widget
+    widget: markets
+    size: 1

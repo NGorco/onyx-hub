@@ -1,0 +1,45 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/sources",
+      "description": "List all registered data sources",
+      "tags": ["data-catalog", "read"],
+      "operation": {
+        "type": "list",
+        "prefix": "source:"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/sources/{id}",
+      "description": "Get a specific data source by ID",
+      "tags": ["data-catalog", "read"],
+      "operation": {
+        "type": "get",
+        "keyPrefix": "source:"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/sources",
+      "description": "Register a new data source",
+      "tags": ["data-catalog", "write"],
+      "operation": {
+        "type": "set",
+        "keyPrefix": "source:",
+        "keyFrom": "body.id"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/sources/{id}",
+      "description": "Remove a data source",
+      "tags": ["data-catalog", "write"],
+      "operation": {
+        "type": "delete",
+        "keyPrefix": "source:"
+      }
+    }
+  ]
+}

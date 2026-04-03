@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/content",
+      "description": "Read a Markdown file from the content directory",
+      "tags": ["markdown", "read"],
+      "operation": {
+        "type": "readFile",
+        "dir": "./content"
+      }
+    }
+  ]
+}

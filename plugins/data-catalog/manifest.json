@@ -1,0 +1,17 @@
+{
+  "id": "data-catalog",
+  "name": "Data Catalog",
+  "version": "1.0.0",
+  "description": "Browse, register, and search data sources across the organization",
+  "ui": {
+    "entry": "index.js",
+    "route": "/data-catalog",
+    "nav": {
+      "label": "Data Catalog",
+      "icon": "database"
+    }
+  },
+  "be": {
+    "type": "declarative"
+  }
+}

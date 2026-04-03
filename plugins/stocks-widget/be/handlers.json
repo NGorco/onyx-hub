@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/data",
+      "description": "Crypto prices from CoinGecko (free, no API key)",
+      "tags": ["markets", "read"],
+      "operation": {
+        "type": "fetch",
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano,polkadot&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true"
+      }
+    }
+  ]
+}

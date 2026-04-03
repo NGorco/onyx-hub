@@ -1,0 +1,20 @@
+{
+  "id": "stocks-widget",
+  "name": "Markets",
+  "version": "1.0.0",
+  "description": "Live crypto prices from CoinGecko",
+  "widgets": [
+    { "id": "markets", "name": "Markets", "entry": "markets.js" }
+  ],
+  "ui": {
+    "entry": "index.js",
+    "route": "/markets",
+    "nav": {
+      "label": "Markets",
+      "icon": "database"
+    }
+  },
+  "be": {
+    "type": "declarative"
+  }
+}

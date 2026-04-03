@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/data",
+      "description": "Current weather from wttr.in",
+      "tags": ["weather", "read"],
+      "operation": {
+        "type": "fetch",
+        "url": "https://wttr.in/?format=j1"
+      }
+    }
+  ]
+}

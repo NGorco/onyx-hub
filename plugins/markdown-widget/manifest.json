@@ -1,0 +1,12 @@
+{
+  "id": "markdown-widget",
+  "name": "Markdown",
+  "version": "1.0.0",
+  "description": "Renders a Markdown file as a widget",
+  "widgets": [
+    { "id": "markdown", "name": "Markdown", "entry": "markdown.js" }
+  ],
+  "be": {
+    "type": "declarative"
+  }
+}

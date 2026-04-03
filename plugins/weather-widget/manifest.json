@@ -1,0 +1,20 @@
+{
+  "id": "weather-widget",
+  "name": "Weather",
+  "version": "1.0.0",
+  "description": "Current weather conditions",
+  "widgets": [
+    { "id": "weather", "name": "Weather", "entry": "weather.js" }
+  ],
+  "ui": {
+    "entry": "index.js",
+    "route": "/weather",
+    "nav": {
+      "label": "Weather",
+      "icon": "health"
+    }
+  },
+  "be": {
+    "type": "declarative"
+  }
+}

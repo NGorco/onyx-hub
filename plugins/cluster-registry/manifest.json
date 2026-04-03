@@ -1,0 +1,20 @@
+{
+  "id": "cluster-registry",
+  "name": "Cluster Registry",
+  "version": "1.0.0",
+  "description": "Self-registration and heartbeat-based discovery of all nodes in the cluster",
+  "widgets": [
+    { "id": "nodes", "name": "Cluster Nodes", "entry": "nodes.js" }
+  ],
+  "ui": {
+    "entry": "index.js",
+    "route": "/cluster-registry",
+    "nav": {
+      "label": "Cluster Registry",
+      "icon": "api"
+    }
+  },
+  "be": {
+    "type": "declarative"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/nodes",
+      "description": "List all active nodes in the cluster",
+      "tags": ["cluster", "read"],
+      "operation": {
+        "type": "list",
+        "prefix": "node:"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/nodes/{id}",
+      "description": "Get a specific node by ID",
+      "tags": ["cluster", "read"],
+      "operation": {
+        "type": "get",
+        "keyPrefix": "node:"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/nodes",
+      "description": "Register or heartbeat a node",
+      "tags": ["cluster", "write"],
+      "operation": {
+        "type": "set",
+        "keyPrefix": "node:",
+        "keyFrom": "body.id"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/nodes/{id}",
+      "description": "Remove a node from the cluster",
+      "tags": ["cluster", "write"],
+      "operation": {
+        "type": "delete",
+        "keyPrefix": "node:"
+      }
+    }
+  ]
+}
